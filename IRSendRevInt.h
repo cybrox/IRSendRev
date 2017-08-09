@@ -237,22 +237,22 @@ extern volatile irparams_t irparams;
 // defines for timer4 (10 bits, high speed option)
 #elif defined(IR_USE_TIMER4_HS)
 #define TIMER_RESET
-#define TIMER_ENABLE_PWM     (TCCR4A |= _BV(COM4A1))
-#define TIMER_DISABLE_PWM    (TCCR4A &= ~(_BV(COM4A1)))
+#define TIMER_ENABLE_PWM     (TCCR4C |= _BV(COM4D1))
+#define TIMER_DISABLE_PWM    (TCCR4C &= ~(_BV(COM4D1)))
 #define TIMER_ENABLE_INTR    (TIMSK4 = _BV(TOIE4))
 #define TIMER_DISABLE_INTR   (TIMSK4 = 0)
 #define TIMER_INTR_NAME      TIMER4_OVF_vect
 #define TIMER_CONFIG_KHZ(val) ({ \
   const uint16_t pwmval = SYSCLOCK / 2000 / (val); \
-  TCCR4A = (1<<PWM4A); \
+  TCCR4A = 0; \
   TCCR4B = _BV(CS40); \
-  TCCR4C = 0; \
+  TCCR4C = (1<<PWM4D); \
   TCCR4D = (1<<WGM40); \
   TCCR4E = 0; \
   TC4H = pwmval >> 8; \
   OCR4C = pwmval; \
   TC4H = (pwmval / 3) >> 8; \
-  OCR4A = (pwmval / 3) & 255; \
+  OCR4D = (pwmval / 3) & 255; \
 })
 #define TIMER_CONFIG_NORMAL() ({ \
   TCCR4A = 0; \
@@ -268,7 +268,7 @@ extern volatile irparams_t irparams;
 #if defined(CORE_OC4A_PIN)
 #define TIMER_PWM_PIN        CORE_OC4A_PIN                              /* Teensy                       */
 #elif defined(__AVR_ATmega32U4__)
-#define TIMER_PWM_PIN        10                                         /* pin D13 on leonardo board    */
+#define TIMER_PWM_PIN        6                                          /* pin D13 on leonardo board    */
 #else
 #error "Please add OC4A pin number here\n"
 #endif
